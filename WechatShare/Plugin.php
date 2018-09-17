@@ -180,7 +180,7 @@ class WechatShare_Plugin implements Typecho_Plugin_Interface
      * @return null|string
      */
     private static function findImage($txt) {
-        $pattern = '/(http(s)?:\/\/.+?\.(png|jpg|jpeg|gif|ico))/i';
+        $pattern = '/(https?:\/\/[\w\.\-\/]+?\.(png|jpg|jpeg|gif|ico))/i';
         preg_match($pattern, $txt, $matches);
         if (!empty($matches)) {
             return $matches[0];
