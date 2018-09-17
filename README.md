@@ -1,0 +1,2 @@
+# Typecho_WechatShare_Plugin
+Typecho 微信分享显示缩略图和简介的插件
