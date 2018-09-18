@@ -54,7 +54,7 @@ class WechatShare_Plugin implements Typecho_Plugin_Interface
             NULL,
             '',
             _t('默认缩略图URL'),
-            _t('插件会使用文章中第一张图片，如果没有的话会使用此url，如果留空会使用favicon.ico')
+            _t('插件会使用自定义字段的图片URL，如果没有的话，会使用文章中第一张图片，如果还没有的话会使用此URL，此处留空会则会使用favicon.ico')
         );
         $appId = new Typecho_Widget_Helper_Form_Element_Text(
             'wechatAppId',
@@ -111,7 +111,7 @@ class WechatShare_Plugin implements Typecho_Plugin_Interface
      */
     public static function addFields($layout) {
         $wxImg = new Typecho_Widget_Helper_Form_Element_Text(
-            'wximg', null, '', _t('微信缩略图URL'), _t('填入none、off、null则表示此文章任何图片都不用做缩略图，而使用默认')
+            'wximg', null, '', _t('微信缩略图URL'), _t('留空会使用文章中第一张图片；填入none、off、null则表示此文章任何图片都不用做缩略图，而使用默认缩略图URL')
         );
         $layout->addItem($wxImg);
     }
