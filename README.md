@@ -36,3 +36,10 @@ https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login
 ![开启插件分享1](https://raw.github.com/frederickjoe/my_images/master/enabled1.png)
 ![开启插件分享2](https://raw.github.com/frederickjoe/my_images/master/enabled2.png)
 
+### 配置页面
+
+![配置页面](https://raw.github.com/frederickjoe/my_images/master/settingpage.png)
+
+### 撰写文章页面
+
+![撰写文章页面](https://raw.github.com/frederickjoe/my_images/master/newarticle.png)
