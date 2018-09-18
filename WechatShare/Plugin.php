@@ -24,6 +24,9 @@ class WechatShare_Plugin implements Typecho_Plugin_Interface
             throw new Typecho_Plugin_Exception('当前php没有Memcached，无法激活插件');
         }
         Typecho_Plugin::factory('Widget_Archive')->header = array('WechatShare_Plugin', 'output');
+        Typecho_Plugin::factory('Widget_Contents_Post_Edit')->getDefaultFieldItems = array('WechatShare_Plugin', 'addFields');
+        Typecho_Plugin::factory('Widget_Contents_Page_Edit')->getDefaultFieldItems = array('WechatShare_Plugin', 'addFields');
+
         return '插件安装成功，请进行设置';
     }
 
@@ -104,6 +107,16 @@ class WechatShare_Plugin implements Typecho_Plugin_Interface
     }
 
     /**
+     * @param Typecho_Widget_Helper_Layout $layout
+     */
+    public static function addFields($layout) {
+        $wxImg = new Typecho_Widget_Helper_Form_Element_Text(
+            'wximg', null, '', _t('微信缩略图URL'), _t('填入none、off、null则表示此文章任何图片都不用做缩略图，而使用默认')
+        );
+        $layout->addItem($wxImg);
+    }
+
+    /**
      * 插件实现方法
      *
      * @access public
@@ -152,16 +165,27 @@ class WechatShare_Plugin implements Typecho_Plugin_Interface
         $shareData['desc'] = mb_substr($archive->description, 0, 60, 'utf-8');
         $shareData['link'] = $archive->permalink;
 
+        // 默认缩略图，favicon.ico
         $shareData['imgUrl'] = Typecho_Request::getUrlPrefix().'/favicon.ico';
-
+        // 用户设置的默认缩略图
         $imgUrl = Typecho_Widget::widget('Widget_Options')->plugin('WechatShare')->imgUrl;
+
+        if (strlen($archive->fields->wximg) > 0) {
+            if (in_array(strtolower($archive->fields->wximg), array('null', 'none', 'off'))) {
+                // 如果配置了wximg字段，且是none、null、off，则不做处理
+            } else {
+                // 否则拿这个字段作为图片
+                $imgUrl = $archive->fields->wximg;
+            }
+        } else {
+            // 寻找文章中的图片
+            $imgUrl = self::findImage($archive->content);
+        }
+
         if ($imgUrl) {
             $shareData['imgUrl'] = $imgUrl;
         }
-        $imgUrl = self::findImage($archive->content);
-        if ($imgUrl) {
-            $shareData['imgUrl'] = $imgUrl;
-        }
+
         $shareDataStr = json_encode($shareData, JSON_UNESCAPED_UNICODE);
 
         echo '<script>'.
@@ -180,7 +204,7 @@ class WechatShare_Plugin implements Typecho_Plugin_Interface
      * @return null|string
      */
     private static function findImage($txt) {
-        $pattern = '/(https?:\/\/[\w\.\-\/]+?\.(png|jpg|jpeg|gif|ico))/i';
+        $pattern = '/https?:\/\/[\w\.\-\/]+?\.(png|jpg|jpeg|gif|ico)/i';
         preg_match($pattern, $txt, $matches);
         if (!empty($matches)) {
             return $matches[0];
